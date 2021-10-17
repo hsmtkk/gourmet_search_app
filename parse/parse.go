@@ -1,37 +1,23 @@
-package main
+package parse
 
 import (
 	"encoding/xml"
-	"fmt"
-	"io/ioutil"
-	"log"
 )
-
-// type Plant struct {
-// 	// Id      int      `xml:"id,attr"`
-// 	shopName    string   `xml:"name"`
-// 	Origin  []string `xml:"origin"`
-// }
-type Schema struct {
-	Results Results `xml:"results"`
-}
 
 type Results struct {
 	Shops []Shop `xml:"shop"`
 }
 
 type Shop struct {
-	Name string `xml:"name"`
+	ID        string `xml:"id"`
+	Name      string `xml:"name"`
+	LogoImage string `xml:"logo_image"`
 }
 
-func main() {
-	content, err := ioutil.ReadFile("sample.xml")
-	if err != nil {
-		log.Fatal(err)
+func Parse(xmlBytes []byte) ([]Shop, error) {
+	var rs Results
+	if err := xml.Unmarshal(xmlBytes, &rs); err != nil {
+		return nil, err
 	}
-	var p Schema
-	if err := xml.Unmarshal(content, &p); err != nil {
-		panic(err)
-	}
-	fmt.Println(p)
+	return rs.Shops, nil
 }
